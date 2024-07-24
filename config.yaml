@@ -1,0 +1,46 @@
+paths:
+  data_dir: "data"
+
+stock:
+  symbol: "AAPL"
+
+date_range:
+  start: "2010-01-01"
+  end: "2023-07-25"
+
+models:
+  forecast_steps: 30
+
+data_collection:
+  economic_indicators:
+    - "GDP"
+    - "Inflation"
+    - "Interest_Rate"
+
+feature_engineering:
+  technical_indicators:
+    - "SMA"
+    - "EMA"
+    - "RSI"
+    - "MACD"
+
+machine_learning:
+  model: "RandomForest"
+  parameters:
+    n_estimators: 100
+    max_depth: 10
+
+deep_learning:
+  model: "LSTM"
+  parameters:
+    units: 50
+    dropout: 0.2
+    epochs: 100
+    batch_size: 32
+    sequence_length: 60
+
+visualization:
+  plot_types:
+    - "stock_data"
+    - "feature_importance"
+    - "predictions"
