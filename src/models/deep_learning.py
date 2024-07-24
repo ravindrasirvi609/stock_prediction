@@ -29,7 +29,7 @@ def prepare_data(df, target_col='Close', sequence_length=60):
     
     print(f"Output X shape: {np.array(X).shape}")
     print(f"Output y shape: {np.array(y).shape}")
-    return np.array(X), np.array(y), scaler
+    return np.array(X), np.array(y), scaler, df.shape[1]
 
 def create_lstm_model(input_shape, units=50, dropout=0.2):
     model = Sequential([
@@ -75,8 +75,8 @@ def run_lstm_model(X_train, y_train, X_test, y_test, config):
         print(f"Combined test shape: {combined_test.shape}")
         
         sequence_length = config.get('sequence_length', 60)  # Use 60 as default if not specified
-        X_train_lstm, y_train_lstm, scaler = prepare_data(combined_train, sequence_length=sequence_length)
-        X_test_lstm, y_test_lstm, _ = prepare_data(combined_test, sequence_length=sequence_length)
+        X_train_lstm, y_train_lstm, scaler, n_features = prepare_data(combined_train, sequence_length=sequence_length)
+        X_test_lstm, y_test_lstm, _, _ = prepare_data(combined_test, sequence_length=sequence_length)
         
         print(f"X_train_lstm shape: {X_train_lstm.shape}")
         print(f"y_train_lstm shape: {y_train_lstm.shape}")
@@ -110,8 +110,11 @@ def run_lstm_model(X_train, y_train, X_test, y_test, config):
         y_pred = y_pred[:min_samples]
         y_test_lstm = y_test_lstm[:min_samples]
 
-        y_pred_inv = scaler.inverse_transform(np.hstack((last_sequence, y_pred)))[:, -1]
-        y_test_inv = scaler.inverse_transform(np.hstack((last_sequence, y_test_lstm)))[:, -1]
+        # Create a dummy array with the correct number of features
+        dummy = np.zeros((y_pred.shape[0], n_features - 1))
+
+        y_pred_inv = scaler.inverse_transform(np.hstack((dummy, y_pred)))[:, -1]
+        y_test_inv = scaler.inverse_transform(np.hstack((dummy, y_test_lstm)))[:, -1]
 
         print(f"y_pred_inv shape: {y_pred_inv.shape}")
         print(f"y_test_inv shape: {y_test_inv.shape}")
